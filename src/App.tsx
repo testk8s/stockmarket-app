@@ -4,6 +4,7 @@ import { Navbar, type AppView } from '@/components/layout/Navbar';
 import { MarketScreen } from '@/screens/MarketScreen';
 import { ScreenerScreen } from '@/screens/ScreenerScreen';
 import { SwingScreen } from '@/screens/SwingScreen';
+import { AlgoScreen } from '@/screens/AlgoScreen';
 
 export default function App() {
   const [activeView, setActiveView] = useState<AppView>('india');
@@ -31,6 +32,9 @@ export default function App() {
         </div>
         <div className={`h-full ${activeView === 'swing' ? 'block' : 'hidden'}`}>
           <SwingScreen />
+        </div>
+        <div className={`h-full ${activeView === 'algo' ? 'block' : 'hidden'}`}>
+          <AlgoScreen />
         </div>
       </main>
     </div>

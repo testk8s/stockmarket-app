@@ -1,9 +1,9 @@
-import { Globe, Menu, X, RefreshCw, Search, Zap } from 'lucide-react';
+import { Globe, Menu, X, RefreshCw, Search, Zap, Bot } from 'lucide-react';
 import type { Market } from '@/types';
 import { useMarketStore } from '@/store/marketStore';
 import { useState } from 'react';
 
-export type AppView = 'india' | 'global' | 'screener' | 'swing';
+export type AppView = 'india' | 'global' | 'screener' | 'swing' | 'algo';
 
 interface NavbarProps {
   activeView: AppView;
@@ -73,6 +73,21 @@ export function Navbar({ activeView, onViewChange }: NavbarProps) {
               activeView === 'swing' ? 'bg-yellow-500/20 text-yellow-300' : 'bg-[#2a2d3e] text-slate-500'
             }`}>Scanner</span>
           </button>
+          {/* Algo Trading tab */}
+          <button
+            onClick={() => onViewChange('algo')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all border ${
+              activeView === 'algo'
+                ? 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30'
+                : 'border-transparent text-slate-500 hover:text-slate-300 hover:bg-[#1e2130]'
+            }`}
+          >
+            <Bot size={14} />
+            <span>Algo</span>
+            <span className={`text-xs px-1.5 py-0.5 rounded-full ${
+              activeView === 'algo' ? 'bg-cyan-500/20 text-cyan-300' : 'bg-[#2a2d3e] text-slate-500'
+            }`}>Engine</span>
+          </button>
         </div>
 
         {/* Right actions */}
@@ -118,6 +133,14 @@ export function Navbar({ activeView, onViewChange }: NavbarProps) {
             }`}
           >
             <Zap size={14} /> Swing Trading Scanner
+          </button>
+          <button
+            onClick={() => { onViewChange('algo'); setMobileOpen(false); }}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all border ${
+              activeView === 'algo' ? 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30' : 'border-transparent text-slate-500'
+            }`}
+          >
+            <Bot size={14} /> Algo Trading Engine
           </button>
         </div>
       )}

@@ -287,6 +287,158 @@ export interface SwingFilter {
   sectors: string[];
 }
 
+// ─── Algo Trading ──────────────────────────────────────────────────────────
+
+export type AlgoStrategyType =
+  | 'sma_crossover'
+  | 'ema_crossover'
+  | 'rsi_mean_reversion'
+  | 'macd_signal'
+  | 'bollinger_breakout'
+  | 'momentum'
+  | 'dual_momentum'
+  | 'vwap_reversion'
+  | 'custom';
+
+export type AlgoOrderType = 'market' | 'limit' | 'stop' | 'stop_limit';
+export type AlgoOrderSide = 'buy' | 'sell';
+export type AlgoOrderStatus = 'pending' | 'filled' | 'partial' | 'cancelled' | 'rejected';
+export type AlgoStatus = 'idle' | 'running' | 'paused' | 'stopped';
+
+export interface AlgoStrategyParam {
+  key: string;
+  label: string;
+  type: 'number' | 'select' | 'boolean';
+  value: number | string | boolean;
+  min?: number;
+  max?: number;
+  step?: number;
+  options?: { value: string; label: string }[];
+  description: string;
+}
+
+export interface AlgoStrategy {
+  id: string;
+  name: string;
+  description: string;
+  type: AlgoStrategyType;
+  params: AlgoStrategyParam[];
+  symbols: string[];
+  market: 'india' | 'global' | 'all';
+  positionSize: number;       // % of capital per trade (1-100)
+  maxPositions: number;       // max concurrent open positions
+  stopLossPercent: number;
+  takeProfitPercent: number;
+  status: AlgoStatus;
+  createdAt: number;
+  updatedAt: number;
+}
+
+export interface AlgoSignal {
+  id: string;
+  strategyId: string;
+  strategyName: string;
+  symbol: string;
+  name: string;
+  exchange: string;
+  side: AlgoOrderSide;
+  price: number;
+  currency: string;
+  reason: string;
+  indicators: Record<string, number | string>;
+  confidence: number;        // 0-100
+  generatedAt: number;
+  status: 'new' | 'acted' | 'dismissed';
+}
+
+export interface AlgoOrder {
+  id: string;
+  strategyId: string;
+  strategyName: string;
+  symbol: string;
+  name: string;
+  side: AlgoOrderSide;
+  type: AlgoOrderType;
+  quantity: number;
+  price: number;
+  filledPrice?: number;
+  stopPrice?: number;
+  currency: string;
+  status: AlgoOrderStatus;
+  filledAt?: number;
+  createdAt: number;
+  pnl?: number;
+  pnlPercent?: number;
+}
+
+export interface AlgoPosition {
+  symbol: string;
+  name: string;
+  exchange: string;
+  strategyId: string;
+  strategyName: string;
+  side: AlgoOrderSide;
+  quantity: number;
+  entryPrice: number;
+  currentPrice: number;
+  currency: string;
+  pnl: number;
+  pnlPercent: number;
+  stopLoss: number;
+  takeProfit: number;
+  openedAt: number;
+  durationMs: number;
+}
+
+export interface BacktestTrade {
+  date: string;
+  symbol: string;
+  side: AlgoOrderSide;
+  price: number;
+  quantity: number;
+  pnl: number;
+  pnlPercent: number;
+  holdingDays: number;
+  reason: string;
+}
+
+export interface BacktestResult {
+  strategyId: string;
+  symbol: string;
+  startDate: string;
+  endDate: string;
+  initialCapital: number;
+  finalCapital: number;
+  totalReturn: number;
+  totalReturnPercent: number;
+  annualizedReturn: number;
+  maxDrawdown: number;
+  maxDrawdownPercent: number;
+  sharpeRatio: number;
+  winRate: number;
+  totalTrades: number;
+  winningTrades: number;
+  losingTrades: number;
+  avgWin: number;
+  avgLoss: number;
+  profitFactor: number;
+  trades: BacktestTrade[];
+  equityCurve: { date: string; equity: number; drawdown: number }[];
+}
+
+export interface AlgoPortfolioStats {
+  totalCapital: number;
+  deployedCapital: number;
+  availableCapital: number;
+  totalPnL: number;
+  totalPnLPercent: number;
+  todayPnL: number;
+  winRate: number;
+  totalOrders: number;
+  openPositions: number;
+  activeStrategies: number;
+}
+
 export interface StockDetailData {
   quote: StockQuote;
   historical: OHLCVData[];
