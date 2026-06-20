@@ -3,6 +3,7 @@ import { useMarketStore } from '@/store/marketStore';
 import { Navbar, type AppView } from '@/components/layout/Navbar';
 import { MarketScreen } from '@/screens/MarketScreen';
 import { ScreenerScreen } from '@/screens/ScreenerScreen';
+import { SwingScreen } from '@/screens/SwingScreen';
 
 export default function App() {
   const [activeView, setActiveView] = useState<AppView>('india');
@@ -27,6 +28,9 @@ export default function App() {
         </div>
         <div className={`h-full ${activeView === 'screener' ? 'block' : 'hidden'}`}>
           <ScreenerScreen />
+        </div>
+        <div className={`h-full ${activeView === 'swing' ? 'block' : 'hidden'}`}>
+          <SwingScreen />
         </div>
       </main>
     </div>

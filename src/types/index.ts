@@ -210,6 +210,83 @@ export interface CacheEntry<T> {
 
 export type ViewTab = 'watchlist' | 'analysis' | 'dashboard' | 'news' | 'prediction';
 
+// ─── Swing Trading ─────────────────────────────────────────────
+export type SwingSetupType =
+  | 'breakout'
+  | 'pullback'
+  | 'reversal'
+  | 'momentum'
+  | 'volume_surge'
+  | 'oversold_bounce'
+  | 'trend_continuation';
+
+export type SwingTimeframe = '1d' | '3d' | '1w' | '2w';
+
+export type SwingMarketSource = 'india' | 'global' | 'usa' | 'uk' | 'japan' | 'germany' | 'china';
+
+export interface SwingSignal {
+  category: 'price' | 'volume' | 'technical' | 'news';
+  name: string;
+  value: string;
+  impact: 'bullish' | 'bearish' | 'neutral';
+  strength: number;   // 0–1
+  description: string;
+}
+
+export interface SwingTrade {
+  symbol: string;
+  name: string;
+  exchange: string;
+  sector: string;
+  market: SwingMarketSource;
+  currentPrice: number;
+  currency: string;
+
+  // Setup classification
+  setupType: SwingSetupType;
+  direction: 'long' | 'short';
+  timeframe: SwingTimeframe;
+
+  // Entry / Risk / Reward
+  entryPrice: number;
+  entryZoneLow: number;
+  entryZoneHigh: number;
+  stopLoss: number;
+  target1: number;
+  target2: number;
+  target3: number;
+  riskRewardRatio: number;
+  riskPercent: number;
+  rewardPercent: number;
+
+  // Scoring
+  overallScore: number;      // 0–100
+  priceScore: number;
+  volumeScore: number;
+  technicalScore: number;
+  newsScore: number;
+
+  // Signals
+  signals: SwingSignal[];
+
+  // Context
+  volumeRatio: number;       // current vol / 20d avg
+  atr: number;
+  trendStrength: number;     // 0–1 (ADX proxy)
+  keyLevel: number;          // nearest S/R
+  generatedAt: number;
+}
+
+export interface SwingFilter {
+  market: SwingMarketSource | 'all';
+  setupType: SwingSetupType | 'all';
+  direction: 'long' | 'short' | 'all';
+  minScore: number;
+  minRR: number;
+  maxRisk: number;
+  sectors: string[];
+}
+
 export interface StockDetailData {
   quote: StockQuote;
   historical: OHLCVData[];

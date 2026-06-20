@@ -1,9 +1,9 @@
-import { Globe, Menu, X, RefreshCw, Search } from 'lucide-react';
+import { Globe, Menu, X, RefreshCw, Search, Zap } from 'lucide-react';
 import type { Market } from '@/types';
 import { useMarketStore } from '@/store/marketStore';
 import { useState } from 'react';
 
-export type AppView = 'india' | 'global' | 'screener';
+export type AppView = 'india' | 'global' | 'screener' | 'swing';
 
 interface NavbarProps {
   activeView: AppView;
@@ -56,9 +56,22 @@ export function Navbar({ activeView, onViewChange }: NavbarProps) {
             <span>Screener</span>
             <span className={`text-xs px-1.5 py-0.5 rounded-full ${
               activeView === 'screener' ? 'bg-purple-500/20 text-purple-300' : 'bg-[#2a2d3e] text-slate-500'
-            }`}>
-              5 Markets
-            </span>
+            }`}>5 Markets</span>
+          </button>
+          {/* Swing Trading tab */}
+          <button
+            onClick={() => onViewChange('swing')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all border ${
+              activeView === 'swing'
+                ? 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30'
+                : 'border-transparent text-slate-500 hover:text-slate-300 hover:bg-[#1e2130]'
+            }`}
+          >
+            <Zap size={14} />
+            <span>Swing</span>
+            <span className={`text-xs px-1.5 py-0.5 rounded-full ${
+              activeView === 'swing' ? 'bg-yellow-500/20 text-yellow-300' : 'bg-[#2a2d3e] text-slate-500'
+            }`}>Scanner</span>
           </button>
         </div>
 
@@ -97,6 +110,14 @@ export function Navbar({ activeView, onViewChange }: NavbarProps) {
             }`}
           >
             <Search size={14} /> Screener — 5 Country Markets
+          </button>
+          <button
+            onClick={() => { onViewChange('swing'); setMobileOpen(false); }}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all border ${
+              activeView === 'swing' ? 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30' : 'border-transparent text-slate-500'
+            }`}
+          >
+            <Zap size={14} /> Swing Trading Scanner
           </button>
         </div>
       )}
