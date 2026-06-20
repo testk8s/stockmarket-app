@@ -1,11 +1,12 @@
-import { useEffect } from 'react';
-import type { Market } from '@/types';
+import { useEffect, useState } from 'react';
 import { useMarketStore } from '@/store/marketStore';
-import { Navbar } from '@/components/layout/Navbar';
+import { Navbar, type AppView } from '@/components/layout/Navbar';
 import { MarketScreen } from '@/screens/MarketScreen';
+import { ScreenerScreen } from '@/screens/ScreenerScreen';
 
 export default function App() {
-  const { activeMarket, setActiveMarket, refreshQuotes, quotes, indiaWatchlist, globalWatchlist } = useMarketStore();
+  const [activeView, setActiveView] = useState<AppView>('india');
+  const { refreshQuotes, quotes, indiaWatchlist, globalWatchlist } = useMarketStore();
 
   useEffect(() => {
     const indiaHasData = indiaWatchlist.some(w => quotes[w.symbol]);
@@ -16,13 +17,16 @@ export default function App() {
 
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-[#0f1117]">
-      <Navbar activeMarket={activeMarket} onMarketChange={(m: Market) => setActiveMarket(m)} />
+      <Navbar activeView={activeView} onViewChange={setActiveView} />
       <main className="flex-1 overflow-hidden">
-        <div className={`h-full ${activeMarket === 'india' ? 'block' : 'hidden'}`}>
+        <div className={`h-full ${activeView === 'india' ? 'block' : 'hidden'}`}>
           <MarketScreen market="india" />
         </div>
-        <div className={`h-full ${activeMarket === 'global' ? 'block' : 'hidden'}`}>
+        <div className={`h-full ${activeView === 'global' ? 'block' : 'hidden'}`}>
           <MarketScreen market="global" />
+        </div>
+        <div className={`h-full ${activeView === 'screener' ? 'block' : 'hidden'}`}>
+          <ScreenerScreen />
         </div>
       </main>
     </div>

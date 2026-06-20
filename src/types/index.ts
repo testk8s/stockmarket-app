@@ -1,4 +1,46 @@
 export type Market = 'india' | 'global';
+export type CountryMarket = 'usa' | 'uk' | 'japan' | 'germany' | 'china';
+
+export interface ScreenerCriteria {
+  minPrice?: number;
+  maxPrice?: number;
+  minMarketCap?: number;
+  maxMarketCap?: number;
+  minPE?: number;
+  maxPE?: number;
+  minChangePercent?: number;
+  maxChangePercent?: number;
+  minVolume?: number;
+  minRSI?: number;
+  maxRSI?: number;
+  sectors?: string[];
+  minROE?: number;
+  minRevenueGrowth?: number;
+  maxDebtEquity?: number;
+  predictionDirection?: 'bullish' | 'bearish' | 'all';
+  minConfidence?: number;
+}
+
+export interface ScreenerResult {
+  symbol: string;
+  name: string;
+  exchange: string;
+  sector: string;
+  country: CountryMarket;
+  quote: StockQuote;
+  prediction: PredictionResult;
+  score: number; // composite screener score 0-100
+}
+
+export interface CountryInfo {
+  id: CountryMarket;
+  name: string;
+  flag: string;
+  exchanges: string[];
+  currency: string;
+  indexName: string;
+  color: string;
+}
 
 export interface Stock {
   symbol: string;

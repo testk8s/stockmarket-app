@@ -1,22 +1,25 @@
-import { Globe, Menu, X, RefreshCw } from 'lucide-react';
+import { Globe, Menu, X, RefreshCw, Search } from 'lucide-react';
 import type { Market } from '@/types';
 import { useMarketStore } from '@/store/marketStore';
 import { useState } from 'react';
 
+export type AppView = 'india' | 'global' | 'screener';
+
 interface NavbarProps {
-  activeMarket: Market;
-  onMarketChange: (market: Market) => void;
+  activeView: AppView;
+  onViewChange: (view: AppView) => void;
 }
 
-export function Navbar({ activeMarket, onMarketChange }: NavbarProps) {
+export function Navbar({ activeView, onViewChange }: NavbarProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { indiaWatchlist, globalWatchlist, loading, refreshQuotes } = useMarketStore();
+  const isMarket = activeView === 'india' || activeView === 'global';
 
   return (
     <nav className="bg-[#1a1d26] border-b border-[#2a2d3e] flex-shrink-0 z-20">
       <div className="flex items-center justify-between px-4 h-14">
         {/* Brand */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-shrink-0">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
             <Globe size={16} className="text-white" />
           </div>
@@ -26,33 +29,51 @@ export function Navbar({ activeMarket, onMarketChange }: NavbarProps) {
           </div>
         </div>
 
-        {/* Market switcher (desktop) */}
-        <div className="hidden sm:flex items-center bg-[#0f1117] border border-[#2a2d3e] rounded-xl p-1 gap-1">
+        {/* Nav items (desktop) */}
+        <div className="hidden sm:flex items-center gap-1 bg-[#0f1117] border border-[#2a2d3e] rounded-xl p-1">
           <MarketTab
             market="india"
-            active={activeMarket === 'india'}
+            active={activeView === 'india'}
             count={indiaWatchlist.length}
-            onClick={() => onMarketChange('india')}
+            onClick={() => onViewChange('india')}
           />
           <MarketTab
             market="global"
-            active={activeMarket === 'global'}
+            active={activeView === 'global'}
             count={globalWatchlist.length}
-            onClick={() => onMarketChange('global')}
+            onClick={() => onViewChange('global')}
           />
+          {/* Screener tab */}
+          <button
+            onClick={() => onViewChange('screener')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all border ${
+              activeView === 'screener'
+                ? 'bg-purple-500/20 text-purple-400 border-purple-500/30'
+                : 'border-transparent text-slate-500 hover:text-slate-300 hover:bg-[#1e2130]'
+            }`}
+          >
+            <Search size={14} />
+            <span>Screener</span>
+            <span className={`text-xs px-1.5 py-0.5 rounded-full ${
+              activeView === 'screener' ? 'bg-purple-500/20 text-purple-300' : 'bg-[#2a2d3e] text-slate-500'
+            }`}>
+              5 Markets
+            </span>
+          </button>
         </div>
 
         {/* Right actions */}
         <div className="flex items-center gap-2">
-          <button
-            onClick={() => refreshQuotes(activeMarket)}
-            disabled={loading.quotes}
-            className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-xs text-slate-400 hover:text-slate-200 hover:bg-[#2a2d3e] rounded-lg transition-colors"
-          >
-            <RefreshCw size={12} className={loading.quotes ? 'animate-spin' : ''} />
-            Refresh
-          </button>
-          {/* Mobile menu */}
+          {isMarket && (
+            <button
+              onClick={() => refreshQuotes(activeView as Market)}
+              disabled={loading.quotes}
+              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-xs text-slate-400 hover:text-slate-200 hover:bg-[#2a2d3e] rounded-lg transition-colors"
+            >
+              <RefreshCw size={12} className={loading.quotes ? 'animate-spin' : ''} />
+              Refresh
+            </button>
+          )}
           <button
             onClick={() => setMobileOpen(v => !v)}
             className="sm:hidden p-2 text-slate-400 hover:text-slate-200 rounded-lg"
@@ -62,11 +83,21 @@ export function Navbar({ activeMarket, onMarketChange }: NavbarProps) {
         </div>
       </div>
 
-      {/* Mobile market switcher */}
+      {/* Mobile menu */}
       {mobileOpen && (
-        <div className="sm:hidden border-t border-[#2a2d3e] px-4 py-3 flex gap-2">
-          <MarketTab market="india" active={activeMarket === 'india'} count={indiaWatchlist.length} onClick={() => { onMarketChange('india'); setMobileOpen(false); }} />
-          <MarketTab market="global" active={activeMarket === 'global'} count={globalWatchlist.length} onClick={() => { onMarketChange('global'); setMobileOpen(false); }} />
+        <div className="sm:hidden border-t border-[#2a2d3e] px-4 py-3 flex flex-col gap-2">
+          <MarketTab market="india" active={activeView === 'india'} count={indiaWatchlist.length}
+            onClick={() => { onViewChange('india'); setMobileOpen(false); }} />
+          <MarketTab market="global" active={activeView === 'global'} count={globalWatchlist.length}
+            onClick={() => { onViewChange('global'); setMobileOpen(false); }} />
+          <button
+            onClick={() => { onViewChange('screener'); setMobileOpen(false); }}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all border ${
+              activeView === 'screener' ? 'bg-purple-500/20 text-purple-400 border-purple-500/30' : 'border-transparent text-slate-500'
+            }`}
+          >
+            <Search size={14} /> Screener — 5 Country Markets
+          </button>
         </div>
       )}
     </nav>
@@ -80,12 +111,12 @@ function MarketTab({
   return (
     <button
       onClick={onClick}
-      className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+      className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all border ${
         active
           ? isIndia
-            ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30'
-            : 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
-          : 'text-slate-500 hover:text-slate-300 hover:bg-[#1e2130] border border-transparent'
+            ? 'bg-orange-500/20 text-orange-400 border-orange-500/30'
+            : 'bg-blue-500/20 text-blue-400 border-blue-500/30'
+          : 'text-slate-500 hover:text-slate-300 hover:bg-[#1e2130] border-transparent'
       }`}
     >
       <span className="text-base">{isIndia ? '🇮🇳' : '🌍'}</span>
